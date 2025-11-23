@@ -43,7 +43,7 @@ export class TicketService {
     return ticket;
   }
 
-  async list(userRole: string, userId: string) {
+  async list({ userRole, userId }: { userRole: string; userId: string }) {
     if (userRole === "requester") {
       return this.ticketRepo.find({
         where: { created_by: { id: userId } },
@@ -56,7 +56,15 @@ export class TicketService {
     });
   }
 
-  async updateStatus(ticketId: string, status: TicketStatus, userRole: string) {
+  async updateStatus({
+    ticketId,
+    status,
+    userRole,
+  }: {
+    ticketId: string;
+    status: TicketStatus;
+    userRole: string;
+  }) {
     const ticket = await this.ticketRepo.findOne({ where: { id: ticketId } });
 
     if (!ticket) {
@@ -73,7 +81,15 @@ export class TicketService {
     return ticket;
   }
 
-  async assign(ticketId: string, agentId: string, userRole: string) {
+  async assign({
+    ticketId,
+    agentId,
+    userRole,
+  }: {
+    ticketId: string;
+    agentId: string;
+    userRole: string;
+  }) {
     if (userRole === "requester") {
       throw new AppError("Requesters não podem atribuir tickets.", 403);
     }

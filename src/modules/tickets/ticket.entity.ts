@@ -29,14 +29,14 @@ export class Ticket {
   description!: string;
 
   @Column({
-    type: "enum",
+    type: process.env.NODE_ENV === "test" ? "text" : "enum",
     enum: ["open", "in_progress", "pending", "resolved", "closed"],
     default: "open",
   })
   status!: TicketStatus;
 
   @Column({
-    type: "enum",
+    type: process.env.NODE_ENV === "test" ? "text" : "enum",
     enum: ["low", "normal", "high", "critical"],
     default: "normal",
   })

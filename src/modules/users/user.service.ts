@@ -3,12 +3,21 @@ import { AppError } from "../../errors/AppError";
 import { User } from "./user.entity";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
+import { UserRepository } from "./user.repository";
 
 export class UserService {
-  private userRepo = dataSource.getRepository(User);
+  constructor(private userRepo: UserRepository) {}
 
-  async register(name: string, email: string, password: string) {
-    const exists = await this.userRepo.findOne({ where: { email } });
+  async register({
+    name,
+    email,
+    password,
+  }: {
+    name: string;
+    email: string;
+    password: string;
+  }) {
+    const exists = await this.userRepo.findByEmail(email);
 
     if (exists) {
       throw new AppError("E-mail já está em uso.", 400);
@@ -16,7 +25,7 @@ export class UserService {
 
     const hashed = await bcrypt.hash(password, 10);
 
-    const user = this.userRepo.create({
+    const user = await this.userRepo.createUser({
       name,
       email,
       password: hashed,
@@ -33,8 +42,8 @@ export class UserService {
     };
   }
 
-  async login(email: string, password: string) {
-    const user = await this.userRepo.findOne({ where: { email } });
+  async login({ email, password }: { email: string; password: string }) {
+    const user = await this.userRepo.findByEmail(email);
 
     if (!user) {
       throw new AppError("Credenciais inválidas.", 401);
@@ -55,7 +64,15 @@ export class UserService {
       { expiresIn: "1d" }
     );
 
-    return { token };
+    return {
+      token,
+      user: {
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+      },
+    };
   }
 
   async list() {

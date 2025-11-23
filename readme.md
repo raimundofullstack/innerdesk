@@ -78,7 +78,7 @@ src/
 
 ```bash
 # Clone o repositório
-git clone
+git clone https://github.com/raimundofullstack/innerdesk.git
 cd innerdesk
 
 # Instale as dependências

@@ -5,19 +5,32 @@ import { Ticket } from "../modules/tickets/ticket.entity";
 import dotenv from "dotenv";
 import { createDatabase } from "typeorm-extension";
 
+const isTest = process.env.NODE_ENV === "test";
 dotenv.config();
-export const dataSource = new DataSource({
-  type: "postgres",
-  host: process.env.DB_HOST,
-  port: parseInt(process.env.DB_PORT || "5432"),
-  username: process.env.DB_USER,
-  password: process.env.DB_PASS,
-  database: process.env.DB_NAME,
-  synchronize: false,
-  logging: false,
-  entities: [User, Ticket],
-  migrations: ["src/migrations/*.ts"],
-});
+export const dataSource = new DataSource(
+  isTest
+    ? {
+        type: "sqlite",
+        database: ":memory:",
+        dropSchema: true,
+        synchronize: true,
+        logging: false,
+        entities: [User, Ticket],
+        migrations: ["src/migrations/*.ts"],
+      }
+    : {
+        type: "postgres",
+        host: process.env.DB_HOST,
+        database: process.env.DB_NAME,
+        username: process.env.DB_USER,
+        password: process.env.DB_PASS,
+        dropSchema: false,
+        synchronize: false,
+        logging: false,
+        entities: [User, Ticket],
+        migrations: ["src/migrations/*.ts"],
+      }
+);
 
 export const initDatabase = async () => {
   await createDatabase({

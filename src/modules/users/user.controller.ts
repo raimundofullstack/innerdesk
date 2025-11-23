@@ -1,14 +1,16 @@
 import { Request, Response, NextFunction } from "express";
 import { UserService } from "./user.service";
+import { UserRepository } from "./user.repository";
 
-const service = new UserService();
+const repository = new UserRepository();
+const service = new UserService(repository);
 
 export class UserController {
   async register(req: Request, res: Response, next: NextFunction) {
     try {
       const { name, email, password } = req.body;
 
-      const result = await service.register(name, email, password);
+      const result = await service.register({ name, email, password });
 
       res.status(201).json(result);
     } catch (err) {
@@ -20,7 +22,7 @@ export class UserController {
     try {
       const { email, password } = req.body;
 
-      const result = await service.login(email, password);
+      const result = await service.login({ email, password });
 
       res.json(result);
     } catch (err) {

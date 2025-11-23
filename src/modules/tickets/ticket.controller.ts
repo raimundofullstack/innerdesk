@@ -25,7 +25,10 @@ export class TicketController {
   async list(req: Request, res: Response, next: NextFunction) {
     try {
       const user = req.user as any;
-      const tickets = await service.list(user.role, user.sub);
+      const tickets = await service.list({
+        userRole: user.role,
+        userId: user.sub,
+      });
       return res.json(tickets.map(ticketResponse));
     } catch (err) {
       next(err);
@@ -38,7 +41,7 @@ export class TicketController {
       const { status } = req.body;
       const userRole = (req.user as any).role;
 
-      const ticket = await service.updateStatus(ticketId, status, userRole);
+      const ticket = await service.updateStatus({ ticketId, status, userRole });
       return res.json(ticketResponse(ticket));
     } catch (err) {
       next(err);
@@ -51,7 +54,7 @@ export class TicketController {
       const { agentId } = req.body;
       const userRole = (req.user as any).role;
 
-      const ticket = await service.assign(ticketId, agentId, userRole);
+      const ticket = await service.assign({ ticketId, agentId, userRole });
       return res.json(ticketResponse(ticket));
     } catch (err) {
       next(err);
