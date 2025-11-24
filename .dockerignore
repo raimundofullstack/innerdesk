@@ -1,0 +1,23 @@
+# Arquivos de dependências
+node_modules/
+
+# Build
+dist/
+build/
+
+# Testes
+coverage/
+tests/
+
+# Ambiente
+.env
+.env.local
+.env.*.local
+
+# Logs
+logs/
+*.log
+
+# Git
+.git
+.gitignore

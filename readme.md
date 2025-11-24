@@ -56,19 +56,21 @@ src/
 │   ├── validate.ts           # Validação de requisições
 │   └── error-handler.ts      # Tratamento global de erros
 ├── modules/
-│   ├── users/                # Módulo de usuários
-│   │   ├── user.entity.ts
-│   │   ├── user.service.ts
-│   │   ├── user.controller.ts
-│   │   ├── user.routes.ts
-│   │   └── validation/
 │   └── tickets/              # Módulo de tickets
 │       ├── ticket.entity.ts
 │       ├── ticket.service.ts
 │       ├── ticket.controller.ts
+|       ├── ticket.repository.ts
 │       ├── ticket.routes.ts
 │       ├── ticket.mapper.ts
 │       └── validation/
+│   ├── users/                # Módulo de usuários
+│   │   ├── user.entity.ts
+│   │   ├── user.service.ts
+|   |   ├── user.repository.ts
+│   │   ├── user.controller.ts
+│   │   ├── user.routes.ts
+│   │   └── validation/
 ├── migrations/               # Migrações do banco de dados
 └── routes/
     └── index.ts              # Agregador de rotas
@@ -187,9 +189,8 @@ npm run migration:revert
 
 1. **Testes Automatizados**
 
-   - Configurar Jest e Supertest
-   - Testes unitários para services
-   - Testes de integração para endpoints
+   - Finalizar testes unitários para services
+   - Finalizar testes de integração para endpoints
 
 2. **Gerenciamento Avançado de Usuários**
 
@@ -209,8 +210,7 @@ npm run migration:revert
    - Múltiplos anexos por ticket
    - Preview de imagens
 
-5. **Docker & Deploy**
-   - Dockerfile e docker-compose
+5. **Deploy**
    - CI/CD pipeline
    - Deploy em produção
 

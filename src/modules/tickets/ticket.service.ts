@@ -1,11 +1,9 @@
-import { dataSource } from "../../config/data-source";
-import { Ticket, TicketStatus } from "./ticket.entity";
-import { User } from "../users/user.entity";
+import { TicketStatus } from "./ticket.entity";
 import { AppError } from "../../errors/AppError";
+import { TicketRepository } from "./ticket.repository";
 
 export class TicketService {
-  private ticketRepo = dataSource.getRepository(Ticket);
-  private userRepo = dataSource.getRepository(User);
+  private repo = new TicketRepository();
 
   async create(data: {
     title: string;
@@ -13,9 +11,7 @@ export class TicketService {
     priority: string;
     createdById: string;
   }) {
-    const creator = await this.userRepo.findOne({
-      where: { id: data.createdById },
-    });
+    const creator = await this.repo.findCreatorById(data.createdById);
 
     if (!creator) {
       throw new AppError("Usuário não encontrado.", 404);
@@ -29,7 +25,7 @@ export class TicketService {
       );
     }
 
-    const ticket = this.ticketRepo.create({
+    return await this.repo.createTicket({
       title: data.title,
       description: data.description,
       priority: data.priority as "low" | "normal" | "high" | "critical",
@@ -37,23 +33,14 @@ export class TicketService {
       status: "open",
       assigned_to: null,
     });
-
-    await this.ticketRepo.save(ticket);
-
-    return ticket;
   }
 
   async list({ userRole, userId }: { userRole: string; userId: string }) {
     if (userRole === "requester") {
-      return this.ticketRepo.find({
-        where: { created_by: { id: userId } },
-        relations: ["created_by", "assigned_to"],
-      });
+      return this.repo.listByRequester(userId);
     }
 
-    return this.ticketRepo.find({
-      relations: ["created_by", "assigned_to"],
-    });
+    return this.repo.listAll();
   }
 
   async updateStatus({
@@ -65,7 +52,7 @@ export class TicketService {
     status: TicketStatus;
     userRole: string;
   }) {
-    const ticket = await this.ticketRepo.findOne({ where: { id: ticketId } });
+    const ticket = await this.repo.findById(ticketId);
 
     if (!ticket) {
       throw new AppError("Ticket não encontrado.", 404);
@@ -77,8 +64,7 @@ export class TicketService {
 
     ticket.status = status;
 
-    await this.ticketRepo.save(ticket);
-    return ticket;
+    return await this.repo.update(ticket);
   }
 
   async assign({
@@ -94,26 +80,19 @@ export class TicketService {
       throw new AppError("Requesters não podem atribuir tickets.", 403);
     }
 
-    const ticket = await this.ticketRepo.findOne({
-      where: { id: ticketId },
-      relations: ["created_by", "assigned_to"],
-    });
+    const ticket = await this.repo.findById(ticketId);
 
     if (!ticket) {
       throw new AppError("Ticket não encontrado.", 404);
     }
 
-    const agent = await this.userRepo.findOne({
-      where: { id: agentId, role: "agent" },
-    });
+    const agent = await this.repo.findAgentById(agentId);
 
     if (!agent) {
       throw new AppError("O usuário informado não é um agent válido.", 400);
     }
 
     ticket.assigned_to = agent;
-    await this.ticketRepo.save(ticket);
-
-    return ticket;
+    return await this.repo.update(ticket);
   }
 }

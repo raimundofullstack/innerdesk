@@ -24,11 +24,16 @@ export const dataSource = new DataSource(
         database: process.env.DB_NAME,
         username: process.env.DB_USER,
         password: process.env.DB_PASS,
+        port: parseInt(process.env.DB_PORT || "5432"),
         dropSchema: false,
         synchronize: false,
         logging: false,
         entities: [User, Ticket],
-        migrations: ["src/migrations/*.ts"],
+        migrations: [
+          process.env.NODE_ENV === "production"
+            ? "dist/migrations/*.js"
+            : "src/migrations/*.ts",
+        ],
       }
 );
 
