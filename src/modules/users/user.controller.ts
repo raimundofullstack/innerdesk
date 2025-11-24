@@ -38,4 +38,13 @@ export class UserController {
       next(err);
     }
   }
+  async auth(req: Request, res: Response, next: NextFunction) {
+    try {
+      const header = req.headers.authorization;
+      const user = await service.auth({ header });
+      res.json(user);
+    } catch (err) {
+      next(err);
+    }
+  }
 }

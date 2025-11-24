@@ -13,3 +13,4 @@ userRoutes.post("/login", validate(loginUserSchema), controller.login);
 
 // rota protegida
 userRoutes.get("/", auth, roles("admin"), controller.list);
+userRoutes.get("/auth", auth, controller.auth);

@@ -80,4 +80,23 @@ export class UserService {
       select: ["id", "name", "email", "role", "created_at"],
     });
   }
+
+  async auth({ header }: { header: string | undefined }) {
+    if (!header || !header.startsWith("Bearer "))
+      throw new AppError("Token missing or invalid", 401);
+
+    const token = header.split(" ")[1];
+
+    const payload = jwt.verify(token, process.env.JWT_SECRET!) as {
+      userId: string;
+    };
+    const user = await this.userRepo.findOne({
+      where: { id: payload.userId },
+      select: ["id", "name", "email", "role", "created_at", "updated_at"],
+    });
+
+    if (!user) throw new AppError("User not found", 401);
+
+    return user;
+  }
 }

@@ -36,6 +36,7 @@ services:
       DB_NAME: innerdesk
       PORT: 3000
       JWT_SECRET: seu_jwt_secret_aqui_mude_em_producao
+      CORS_ORIGIN: "*"
     ports:
       - "3000:3000"
     depends_on:

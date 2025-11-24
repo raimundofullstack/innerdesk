@@ -40,7 +40,7 @@ export class TicketService {
       return this.repo.listByRequester(userId);
     }
 
-    return this.repo.listAll();
+    return await this.repo.listAll();
   }
 
   async updateStatus({
@@ -67,6 +67,13 @@ export class TicketService {
     return await this.repo.update(ticket);
   }
 
+  async getTicketId({ ticketId }: { ticketId: string }) {
+    const ticket = await this.repo.findById(ticketId);
+    if (!ticket) {
+      throw new AppError("Ticket não encontrado.", 404);
+    }
+    return ticket;
+  }
   async assign({
     ticketId,
     agentId,

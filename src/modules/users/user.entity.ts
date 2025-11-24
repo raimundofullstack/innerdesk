@@ -33,5 +33,5 @@ export class User {
   created_at!: Date;
 
   @UpdateDateColumn()
-  updatedAt!: Date;
+  updated_at!: Date;
 }

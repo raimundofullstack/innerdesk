@@ -35,6 +35,18 @@ export class TicketController {
     }
   }
 
+  async getTicketId(req: Request, res: Response, next: NextFunction) {
+    try {
+      const ticketId = req.params.id;
+
+      const ticket = await service.getTicketId({ ticketId });
+
+      return res.json(ticketResponse(ticket));
+    } catch (err) {
+      next(err);
+    }
+  }
+
   async updateStatus(req: Request, res: Response, next: NextFunction) {
     try {
       const ticketId = req.params.id;

@@ -25,4 +25,8 @@ export class UserRepository {
   async find(options?: any) {
     return this.repo.find(options);
   }
+
+  async findOne(options: any) {
+    return this.repo.findOne(options);
+  }
 }

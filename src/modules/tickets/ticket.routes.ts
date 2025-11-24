@@ -20,6 +20,7 @@ ticketRoutes.post(
   controller.create
 );
 ticketRoutes.get("/", auth, controller.list);
+ticketRoutes.get("/:id", auth, controller.getTicketId);
 ticketRoutes.patch(
   "/:id/status",
   auth,
